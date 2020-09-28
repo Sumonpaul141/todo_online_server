@@ -8,7 +8,7 @@ mongoose.connect('mongodb+srv://mrpaul:random1234@cluster0.szffb.mongodb.net/tod
 // mongoose.connect('mongodb://localhost:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-
+app.engine('html', require('ejs').renderFile);
 
 var userSchema = new mongoose.Schema({
 	name: String,
@@ -445,7 +445,7 @@ app.post("/update_todo", function(req, res){
 });
 
 app.get("/", function(req, res){
-    res.send("ToDo Tracker Online version started listening to the users");
+    res.render('index.html');
 });
 
 
