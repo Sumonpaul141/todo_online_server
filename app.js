@@ -5,7 +5,7 @@ var app = express();
 var Port =  process.env.Port || 5000;
 
 
-mongoose.connect('mongodb://localhost:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Connected...')) .catch(err => console.log(err));
+mongoose.connect('mongodb://192.168.8.16:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Connected...')) .catch(err => console.log(err));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
