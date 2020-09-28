@@ -4,8 +4,8 @@ var bodyParser 	= require("body-parser");
 var app = express();
 var Port =  process.env.Port || 5000;
 
-// mongoose.connect('mongodb+srv://mrpaul:random1234@cluster0.szffb.mongodb.net/todoDB?retryWrites=true&w=majority', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Atlas Connected...')) .catch(err => console.log(err));
-mongoose.connect('mongodb://localhost:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
+mongoose.connect('mongodb+srv://mrpaul:random1234@cluster0.szffb.mongodb.net/todoDB?retryWrites=true&w=majority', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Atlas Connected...')) .catch(err => console.log(err));
+// mongoose.connect('mongodb://localhost:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
