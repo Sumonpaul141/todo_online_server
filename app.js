@@ -4,6 +4,7 @@ var bodyParser 	= require("body-parser");
 var app = express();
 var Port =  process.env.Port || 5000;
 
+// mongoose.connect('mongodb+srv://mrpaul:random1234@cluster0.szffb.mongodb.net/todoDB?retryWrites=true&w=majority', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Atlas Connected...')) .catch(err => console.log(err));
 mongoose.connect('mongodb://localhost:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -409,6 +410,34 @@ app.post("/update_task", function(req, res){
             }else{
                 res.send(newlyTodo); 
                 console.log("Task updated, Status send");
+            }
+    
+        });
+    }
+});
+
+app.post("/update_todo", function(req, res){
+
+
+    var StodoId = req.body.todoId;
+    var StodoTitle = req.body.todoTitle;
+        
+    if(StodoId == null || StodoId.trim() == ""){
+
+        var obj = {
+            "code" : "0",
+            "massage" : "Invalid parameter"
+        }
+        res.send(obj);
+        console.log("Invalid parameter");
+
+    }else{
+        todo.updateOne({"_id" : StodoId},{todoTitle : StodoTitle} , function(err, newlyTodo){
+            if (err) {
+                console.log(err);
+            }else{
+                res.send(newlyTodo); 
+                console.log("Todo updated, Status send");
             }
     
         });
