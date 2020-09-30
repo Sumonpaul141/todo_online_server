@@ -31,7 +31,6 @@ var taskSchema = new mongoose.Schema({
 });
 var task = mongoose.model("task", taskSchema);
 
-
 var todoSchema = new mongoose.Schema({
 	todoTitle: String,
     isDone : { type: Boolean, default: false },
