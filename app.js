@@ -5,10 +5,10 @@ var app = express();
 var port =  process.env.PORT || 8080;
 
 
-// mongoose.connect('mongodb://103.95.96.89:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
-mongoose.connect('mongodb://192.168.8.16:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
 
+mongoose.connect('mongodb+srv://mrpaul:random1234@cluster0.szffb.mongodb.net/todoDB?retryWrites=true&w=majority', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
 app.use(bodyParser.urlencoded({ extended: false }))
+
 app.use(bodyParser.json())
 app.engine('html', require('ejs').renderFile);
 
