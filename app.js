@@ -5,10 +5,15 @@ var app = express();
 var port =  process.env.PORT || 8080;
 
 
+<<<<<<< HEAD
 
 mongoose.connect('mongodb+srv://mrpaul:random1234@cluster0.szffb.mongodb.net/todoDB?retryWrites=true&w=majority', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
 // mongoose.connect('mongodb://localhost:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
 
+=======
+// mongoose.connect('mongodb+srv://mrpaul:random1234@cluster0.szffb.mongodb.net/todoDB?retryWrites=true&w=majority', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB atlas Connected...')) .catch(err => console.log(err));
+mongoose.connect('mongodb://localhost:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
+>>>>>>> dev_branch
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.engine('html', require('ejs').renderFile);
@@ -23,6 +28,7 @@ var user = mongoose.model("user", userSchema);
 var taskSchema = new mongoose.Schema({
 	taskTitle: String,
     taskDescription : String,
+    isArchive : { type: Boolean, default: false },
     createdAt : Date,
     userId :{
 			type: mongoose.Schema.Types.ObjectId,
@@ -140,6 +146,7 @@ app.post("/user_login", function(req, res){
 app.post("/all_task", function(req, res){
 
     var Suser = req.body.userId;
+    var SisArchived = req.body.isArchive;
     
     if(Suser == null || Suser.trim() == ""){
 
@@ -151,7 +158,7 @@ app.post("/all_task", function(req, res){
         console.log("Invalid parameter");
 
     }else{
-        task.find({"userId" : Suser}, function(err, newlyTask){
+        task.find({"userId" : Suser, "isArchive" : SisArchived}, function(err, newlyTask){
             if (err) {
                 console.log(err);
             }else{
@@ -160,7 +167,8 @@ app.post("/all_task", function(req, res){
                     var obj = {
                         "title" : newlyTask[index].taskTitle,
                         "descreiption" : newlyTask[index].taskDescription,
-                        "taskId" : newlyTask[index]._id
+                        "taskId" : newlyTask[index]._id,
+                        "isArchive": newlyTask[index].isArchive,
                     }
                     allTask.push(obj);
                 }
@@ -382,6 +390,35 @@ app.post("/delete_task", function(req, res){
                 }
                 res.send(newlyTodo); 
                 console.log("Task with all todo of that task deleted, Status send");
+            }
+    
+        });
+    }
+});
+
+
+app.post("/archive_task", function(req, res){
+
+
+    var StaskId = req.body.taskId;
+    var SisArchive = req.body.isArchive;
+    
+    if(StaskId == null || StaskId.trim() == ""){
+
+        var obj = {
+            "code" : "0",
+            "massage" : "Invalid parameter"
+        }
+        res.send(obj);
+        console.log("Invalid parameter");
+
+    }else{
+        task.updateOne({"_id" : StaskId},{isArchive : SisArchive}, function(err, newlyTodo){
+            if (err) {
+                console.log(err);
+            }else{
+                res.send(newlyTodo); 
+                console.log("Task archive updated, Status send");
             }
     
         });
