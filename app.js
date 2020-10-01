@@ -5,8 +5,8 @@ var app = express();
 var port =  process.env.PORT || 8080;
 
 
-mongoose.connect('mongodb+srv://mrpaul:random1234@cluster0.szffb.mongodb.net/todoDB?retryWrites=true&w=majority', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB atlas Connected...')) .catch(err => console.log(err));
-// mongoose.connect('mongodb://localhost:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
+// mongoose.connect('mongodb+srv://mrpaul:random1234@cluster0.szffb.mongodb.net/todoDB?retryWrites=true&w=majority', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB atlas Connected...')) .catch(err => console.log(err));
+mongoose.connect('mongodb://localhost:27017/newdb', { keepAlive: 1, useUnifiedTopology: true , useNewUrlParser: true }).then(() => console.log('MongoDB Local Connected...')) .catch(err => console.log(err));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.engine('html', require('ejs').renderFile);
@@ -22,6 +22,7 @@ var taskSchema = new mongoose.Schema({
 	taskTitle: String,
     taskDescription : String,
     isArchive : { type: Boolean, default: false },
+    isDeleted : { type: Boolean, default: false },
     createdAt : Date,
     userId :{
 			type: mongoose.Schema.Types.ObjectId,
@@ -33,6 +34,7 @@ var task = mongoose.model("task", taskSchema);
 var todoSchema = new mongoose.Schema({
 	todoTitle: String,
     isDone : { type: Boolean, default: false },
+    isDeleted : { type: Boolean, default: false },
     taskId :{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Task"
@@ -151,7 +153,7 @@ app.post("/all_task", function(req, res){
         console.log("Invalid parameter");
 
     }else{
-        task.find({"userId" : Suser, "isArchive" : SisArchived}, function(err, newlyTask){
+        task.find({"userId" : Suser, "isArchive" : SisArchived, isDeleted : false}, function(err, newlyTask){
             if (err) {
                 console.log(err);
             }else{
@@ -269,7 +271,7 @@ app.post("/all_todo", function(req, res){
         console.log("Invalid parameter");
 
     }else{
-        todo.find({"taskId" : StaskId}, function(err, newlyTodos){
+        todo.find({"taskId" : StaskId, isDeleted : false}, function(err, newlyTodos){
             if (err) {
                 console.log(err);
             }else{
@@ -339,7 +341,7 @@ app.post("/delete_todo", function(req, res){
         console.log("Invalid parameter");
 
     }else{
-        todo.deleteOne({"_id" : StodoId}, function(err, newlyTodo){
+        todo.updateOne({"_id" : StodoId},{ $set: {isDeleted: true }}, function(err, newlyTodo){
             if (err) {
                 console.log(err);
             }else{
@@ -367,22 +369,21 @@ app.post("/delete_task", function(req, res){
         console.log("Invalid parameter");
 
     }else{
-        task.deleteOne({"_id" : StaskId}, function(err, newlyTodo){
+        task.updateOne({"_id" : StaskId},{isDeleted : true}, function(err, newlyTodo){
             if (err) {
                 console.log(err);
             }else{
-                if(newlyTodo.ok == 1 && newlyTodo.deletedCount ==1){
-                    todo.deleteMany({"taskId" : StaskId}, function(err, deleted){
+                if(newlyTodo.ok == 1 && newlyTodo.nModified ==1){
+                    todo.updateMany({"taskId" : StaskId}, {isDeleted : true}, function(err, deleted){
                         if (err) { 
                             console.log(err);
                         }else{
-                            console.log("Todo of that task deleted, Status send");
+                            res.send(deleted); 
+                            console.log("Task with all todo of that task deleted, Status send");
                         }
                 
                     });
                 }
-                res.send(newlyTodo); 
-                console.log("Task with all todo of that task deleted, Status send");
             }
     
         });
@@ -475,6 +476,20 @@ app.post("/update_todo", function(req, res){
         });
     }
 });
+
+
+// app.post("/add_isDeleted", function(req, res){
+
+//         task.updateMany({"isDeleted" :  { $exists: false }},{ $set : {isDeleted : false}} , function(err, newlyTodo){
+//             if (err) {
+//                 console.log(err);
+//             }else{
+//                 res.send(newlyTodo); 
+//                 console.log("isDeleted updated, Status send");
+//             }
+    
+//         });
+// });
 
 app.get("/", function(req, res){
     res.render('index.html');
